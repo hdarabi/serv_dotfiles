@@ -10,19 +10,19 @@ else
 fi
 
 sudo adduser git
-su git
-cd ~
-mkdir .ssh && chmod 700 .ssh
-touch .ssh/authorized_keys && chmod .ssh/authorized_keys
-ssh-keygen -t rsa -b 4096
+sudo -u git mkdir /home/git/.ssh 
+sudo -u git chmod 700 /home/git/.ssh
+sudo -u git touch /home/git/.ssh/authorized_keys 
+sudo -u git chmod 600 /home/git/.ssh/authorized_keys
+sudo -H -u git ssh-keygen -t rsa -b 4096
 echo "Please enter the path to the git user public key"
 read key_path
-cat $key_path >> ~/.ssh/authorized_keys
-cd /opt/git
+sudo -H -u git cat $key_path >> ~/.ssh/authorized_keys
+sudo -u git mkdir /opt/git
 echo "Please enter project name"
 read proj_name
-mkdir $proj_name
-cd $proj_name
+sudo -H -u git mkdir /opt/git/$proj_name
+sudo -H -u cd $proj_name
 git init --bare
 
 git_shell = which git-shell
@@ -31,12 +31,3 @@ if [ ! -z in_shell ]
 then
 	cat $git_shell >> /etc/shells
 fi
-
-echo "Please enter git_only users. Enter to end"
-read user_name
-while [ ! -z $user_name ]
-do
-	sudo chsh $user_name $git_shell
-	echo "Please enter git_only users. Enter to end"
-	read user_name
-done
